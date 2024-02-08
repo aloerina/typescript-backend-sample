@@ -1,0 +1,5 @@
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "exec": "npx ts-node --project tsconfig.tsnode.json --require dotenv/config ./src/index.ts | pino-pretty -t 'yyyy-mm-dd HH:MM:ss.l'"
+}

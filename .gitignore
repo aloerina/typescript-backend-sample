@@ -1,0 +1,15 @@
+# API keys and secrets
+.env
+
+# Dependency directory
+node_modules
+
+# Output directory
+dist
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Stoplight Studio metadata
+.stoplight

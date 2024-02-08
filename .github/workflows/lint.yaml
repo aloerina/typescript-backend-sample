@@ -1,0 +1,32 @@
+name: Run lint tools
+
+on:
+  workflow_call:
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+          cache: npm
+
+      - name: Install node_modules
+        run: npm ci
+
+      - name: Run ESlint
+        run: npm run lint:eslint
+
+      - name: Run Prettier for check
+        run: npm run lint:prettier
+
+      - name: Run hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+      - name: Run spectral
+        run: npm run lint:openapi

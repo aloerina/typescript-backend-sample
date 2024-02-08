@@ -1,0 +1,29 @@
+name: Run Unit Test
+
+on:
+  workflow_call:
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: mysql://prisma:password@127.0.0.1:3306/sample
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+          cache: npm
+
+      - name: Install node_modules
+        run: npm ci
+
+      - name: DB setup
+        run: npm run db:up-ci
+
+      - name: Run Prisma migrate
+        run: npx prisma migrate deploy
+
+      - name: Run Jest
+        run: npm run test

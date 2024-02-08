@@ -1,0 +1,26 @@
+name: Development flow
+
+on:
+  push:
+
+jobs:
+  git-secrets:
+    uses: ./.github/workflows/git-secrets.yaml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  lint:
+    needs:
+      - git-secrets
+    uses: ./.github/workflows/lint.yaml
+
+  build-ts:
+    needs:
+      - git-secrets
+    uses: ./.github/workflows/build-ts.yaml
+
+  unittest:
+    needs:
+      - lint
+      - build-ts
+    uses: ./.github/workflows/unittest.yaml

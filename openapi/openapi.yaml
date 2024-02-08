@@ -1,0 +1,186 @@
+openapi: 3.0.0
+x-stoplight:
+  id: cevlqfuxozakz
+info:
+  title: TypeScript のバックエンドサンプル
+  version: 1.0.0
+  description: TypeScript のバックエンドサンプル
+  contact:
+    name: Backend Development Team
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /users:
+    parameters: []
+    get:
+      summary: ユーザ一覧取得
+      operationId: getUsers
+      responses:
+        '200':
+          $ref: '#/components/responses/UsersResponse'
+      tags:
+        - users
+      description: ユーザの一覧を取得する
+    post:
+      summary: ユーザ作成
+      operationId: createUser
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+      tags:
+        - users
+      description: ユーザを作成する
+      requestBody:
+        $ref: '#/components/requestBodies/CreateUserReqBody'
+  '/users/{userId}':
+    parameters:
+      - $ref: '#/components/parameters/UserPathParam'
+    get:
+      summary: ユーザ取得
+      operationId: getUser
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+      description: 指定したユーザ ID のユーザを取得する
+      tags:
+        - users
+    patch:
+      summary: ユーザ更新
+      operationId: updateUser
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateUserReqBody'
+      description: 指定したユーザ ID のユーザ情報を更新する
+      tags:
+        - users
+    delete:
+      summary: ユーザ削除
+      operationId: deleteUser
+      tags:
+        - users
+      description: 指定したユーザ ID のユーザを削除する
+      responses:
+        '204':
+          description: No Content
+  /health:
+    get:
+      summary: HTTP ヘルスチェック
+      tags:
+        - health
+      responses:
+        '200':
+          description: OK
+      operationId: getHealth
+      description: HTTP リクエストが受信できているかの動作確認
+components:
+  schemas:
+    User:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        - $ref: '#/components/schemas/NewUser'
+    NewUser:
+      title: NewUser
+      x-stoplight:
+        id: h4un0vczqmzep
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - name
+        - email
+    Error:
+      title: Error
+      x-stoplight:
+        id: 905de43e7b6fe
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+  parameters:
+    UserPathParam:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    UsersResponse:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              users:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            required:
+              - users
+      headers: {}
+    UserResponse:
+      description: |-
+        {
+          "users": {
+            "id": "",
+            
+          }
+        }
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/components/schemas/User'
+            required:
+              - user
+    ErrorResponse:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+            required:
+              - errors
+  requestBodies:
+    UpdateUserReqBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+                format: email
+    CreateUserReqBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NewUser'
+  examples: {}
+tags:
+  - name: health
+  - name: users

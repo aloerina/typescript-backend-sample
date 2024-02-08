@@ -1,0 +1,49 @@
+name: Build docker image and push to ECR
+on:
+  workflow_call:
+    inputs:
+      IMAGE_TAG:
+        description: Image tag
+        type: string
+        required: true
+    secrets:
+      AWS_OIDC_ROLE:
+        required: true
+    outputs:
+      REGISTRY:
+        description: Registory name for ECR
+        value: ${{ jobs.build-image-and-push-ecr.outputs.REGISTRY }}
+
+jobs:
+  build-image-and-push-ecr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+          aws-region: ap-northeast-1
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+
+      - name: Build image
+        run: docker compose build app
+
+      - name: Tag and push image
+        env:
+          IMAGE_NAME: ts-sample
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ts-sample
+          IMAGE_TAG: ${{ inputs.IMAGE_TAG }}
+        run: |
+          docker tag $IMAGE_NAME $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG

@@ -1,0 +1,12 @@
+name: Push image flow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-image-and-push-ecr:
+    uses: ./.github/workflows/build-image-and-push-ecr.yaml
+    with:
+      IMAGE_TAG: ${{ github.sha }}
+    secrets:
+      AWS_OIDC_ROLE: ${{ secrets.AWS_OIDC_ROLE }}

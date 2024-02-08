@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    // zod-prisma-types で発生している問題(根本原因は zod)が解決されたら true に戻す
+    // https://kddi-web-communications.atlassian.net/browse/SRPROT-195?focusedCommentId=47973
+    "exactOptionalPropertyTypes": false
+  },
+  "include": ["src/**/*", "tests/**/*"]
+}

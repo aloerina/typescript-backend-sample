@@ -1,0 +1,43 @@
+version: '3.7'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: ts-sample
+    container_name: ts-sample
+    ports:
+      - 3080:3000
+    platform: linux/x86_64
+    environment:
+      - LOG_LEVEL=debug
+      - DATABASE_URL=mysql://prisma:password@db:3306/sample
+  db:
+    image: mysql:8.0
+    container_name: ts-sample-db
+    ports:
+      - 3306:3306
+    platform: linux/x86_64
+    volumes:
+      - type: bind
+        source: ./docker/db/docker-entrypoint-initdb.d
+        target: /docker-entrypoint-initdb.d
+      - type: bind
+        source: ./docker/db/conf.d/my.cnf
+        target: /etc/mysql/conf.d/my.cnf
+      - type: volume
+        source: db-data
+        target: /var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=sample
+      - MYSQL_USER=prisma
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
